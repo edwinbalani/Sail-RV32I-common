@@ -70,11 +70,45 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	 *	the design should instead use a reset signal going to
 	 *	modules in the design.
 	 */
+
+//	reg add_or_sub;
+
+	wire [31:0] DSPres_add;
+//	wire [31:0] DSPres_sub;
+
 	initial begin
 		ALUOut = 32'b0;
 		Branch_Enable = 1'b0;
 	end
+/*
 
+	always @(ALUctl[3:0]) begin
+	
+		if (ALUctl[3:0] == `kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB) //if sub op
+			add_or_sub = 1'b1;
+		else //else add all the time
+			add_or_sub = 1'b0;
+	end
+*/
+/*	DSPoptional ALUadder(
+			.ope(add_or_sub),
+			.input1(A),
+			.input2(B),
+			.out(DSPres_add)
+		);
+*/
+	DSPadder ALUadder(
+			.input1(A),
+			.input2(B),
+			.out(DSPres_add)
+		);
+/*	
+	DSPsubber ALUsubber(
+			.input1(A),
+			.input2(B),
+			.out(DSPres_sub)
+		);
+*/
 	always @(ALUctl, A, B) begin
 		case (ALUctl[3:0])
 			/*
@@ -90,13 +124,12 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			/*
 			 *	ADD (the fields also match AUIPC, all loads, all stores, and ADDI)
 			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD:	ALUOut = A + B;
-
+			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD:	ALUOut = DSPres_add;//ALUOut = A + B;
+									
 			/*
 			 *	SUBTRACT (the fields also matches all branches)
 			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:	ALUOut = A - B;
-
+			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:	/*ALUOut = DSPres_add;*/ALUOut = A - B;
 			/*
 			 *	SLT (the fields also matches all the other SLT variants)
 			 */

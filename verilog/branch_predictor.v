@@ -105,6 +105,11 @@ module branch_predictor(
 		end
 	end
 
-	assign branch_addr = in_addr + offset;
+	//assign branch_addr = in_addr + offset;
+	DSPadder branch_adder(
+			.input1(in_addr),
+			.input2(offset),
+			.out(branch_addr)
+			);
 	assign prediction = s[1] & branch_decode_sig;
 endmodule
